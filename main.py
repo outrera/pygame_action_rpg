@@ -27,15 +27,12 @@ class ARPG:
         # animator = Animator(GameConstants.SPRITE_SHEET_ADVENTURER,
         #                     sprite_size=GameConstants.SIZE_ADVENTURER)
 
-        sprite_sheet = GameConstants.SPRITE_SHEET_ADVENTURER
-        size = GameConstants.SIZE_ADVENTURER
+        sprite_sheet = GameConstants.ADVENTURER_SPRITE_SHEET
+        size = GameConstants.ADVENTURER_SIZE
         position = (GameConstants.SCREEN_SIZE[0]/2-size[0]/2, GameConstants.SCREEN_SIZE[1]/2-size[1]/2)
 
         hero = Character(sprite_sheet, size, position)
         self.__allgroup.add(hero)
-        actions_list = hero.get_actions_list()
-        import random
-        action = random.choice(actions_list)
 
         cycletime = 0
 
@@ -45,9 +42,43 @@ class ARPG:
             self.__playtime += seconds
             cycletime += seconds
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.__mainloop = False
+            # hero default mode
+            new_speed = (0, 0)
+            hero.set_action("idle")
+
+            pygame.event.pump()
+            key = pygame.key.get_pressed()
+            if key[pygame.K_ESCAPE]:
+                self.__mainloop = False
+            if key[pygame.K_a] or key[pygame.K_d] or key[pygame.K_w] or key[pygame.K_s]:
+                hero.set_action("run")
+            if key[pygame.K_a]:
+                new_speed = (-GameConstants.ADVENTURER_SPEED[0], new_speed[1])
+            if key[pygame.K_d]:
+                new_speed = (GameConstants.ADVENTURER_SPEED[0], new_speed[1])
+            if key[pygame.K_w]:
+                new_speed = (new_speed[0], -GameConstants.ADVENTURER_SPEED[1])
+            if key[pygame.K_s]:
+                new_speed = (new_speed[0], GameConstants.ADVENTURER_SPEED[0])
+            if key[pygame.K_LSHIFT]:
+                hero.set_action("walk")
+                new_speed = (new_speed[0]/2, new_speed[1]/2)
+            if key[pygame.K_SPACE]:
+                # TODO: need to implement jump
+                pass
+            mouse_keys = pygame.mouse.get_pressed()
+
+            if mouse_keys[0]:
+                new_speed = (0, 0)
+                hero.set_action("bow")
+                mouse_pos = pygame.mouse.get_pos()
+                if mouse_pos[0] > hero.get_position()[0] + hero.get_size()[0]:
+                    hero.turn_right()
+                else:
+                    hero.turn_left()
+
+
+            hero.set_speed(new_speed)
 
             if cycletime > GameConstants.INTERVAL:
                 cycletime = 0
@@ -55,7 +86,7 @@ class ARPG:
                 self.__allgroup.update(seconds)
                 self.__allgroup.draw(self.__screen)
 
-            pygame.display.set_caption("[FPS]: %.2f action: %s" % (self.__clock.get_fps(), action))
+            pygame.display.set_caption("[FPS]: %.2f action: %s" % (self.__clock.get_fps(), hero.get_action()))
             # pygame.display.set_caption("[FPS]: %.2f action: %s picture: %i" % (self.__clock.get_fps(),
             #                                                                    action,
             #                                                                    hero.get_sprite_index()))

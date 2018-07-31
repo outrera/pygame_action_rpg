@@ -28,7 +28,7 @@ class GameObject(Sprite):
     def get_rect(self) -> pygame.Rect:
         return self.rect
 
-    def set_position(self, position: pygame.Rect) -> None:
+    def set_position(self, position):
         self.rect.x = position[0]
         self.rect.y = position[1]
 

@@ -50,6 +50,7 @@ class Animator(object):
         self.__animation_dict = prepare_animations(spritesheet_file, atlas_file, sprite_size)
         self.__animation_key = ""   # animation key (name)
         self.__sprite_index = 0     # index of current sprite in animation list of sprites
+        self.__flip = False  # flip the image
 
     def get_animations_keys(self) -> []:
         return list(self.__animation_dict.keys())
@@ -70,6 +71,12 @@ class Animator(object):
             return 0
         else:
             return index + 1
+
+    def set_flip(self):
+        self.__flip = True
+
+    def unset_flip(self):
+        self.__flip = False
 
     def flip_sprites_ver(self):
         """
@@ -97,7 +104,12 @@ class Animator(object):
             if self.__sprite_index == len(self.__animation_dict[self.__animation_key]):
                 self.__sprite_index = 0
 
-        return self.__animation_dict[self.__animation_key][self.__sprite_index]
+        image = self.__animation_dict[self.__animation_key][self.__sprite_index]
+
+        if self.__flip:
+            image = pygame.transform.flip(image, True, False)
+
+        return image
 
     def get_last_sprite(self) -> pygame.Surface:
         """
