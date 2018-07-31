@@ -13,7 +13,7 @@ class GameObject(Sprite):
     image = []  # a list of all images
 
     def __init__(self, image, position):
-        super(GameObject, self).__init__(self.groups)  # call the parent class
+        super(GameObject, self).__init__()  # call the parent class
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = position[0]
@@ -22,7 +22,7 @@ class GameObject(Sprite):
     def update(self):
         pass
 
-    def get_image(self) -> pygame.Image:
+    def get_image(self) -> pygame.Surface:
         return self.image
 
     def get_rect(self) -> pygame.Rect:
